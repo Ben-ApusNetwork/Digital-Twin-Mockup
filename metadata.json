@@ -1,0 +1,5 @@
+{
+  "name": "Digital Twin MVP",
+  "description": "A 3-5 minute text-only experience where a user answers personality questions, generates an AI twin that mimics their communication style, chats with it, and then rates the interaction.",
+  "requestFramePermissions": []
+}
