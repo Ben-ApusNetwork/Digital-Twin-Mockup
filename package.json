@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run build:client && npm run build:server",
     "build:client": "mkdir -p dist/public && esbuild src/index.tsx --bundle --minify --outfile=dist/public/index.js && cp public/* dist/public/",
-    "build:server": "mkdir -p dist && esbuild server/server.ts --bundle --minify --platform=node --format=esm --outfile=dist/server.js",
+    "build:server": "mkdir -p dist && esbuild server/server.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server.js",
     "start": "node dist/server.js"
   },
   "dependencies": {

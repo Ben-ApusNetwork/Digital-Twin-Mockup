@@ -46,16 +46,16 @@ app.post('/api/generate-persona', async (req, res) => {
             **Generated Persona Tag:**
         `;
 
+        // 修复generate-persona端点 (大约第49行)
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: prompt,
-            config: {
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            generationConfig: {
                 temperature: 0.5,
                 maxOutputTokens: 50,
-                thinkingConfig: { thinkingBudget: 25 },
             }
         });
-
+        
         const personaText = response.text.trim();
         const cleanedPersona = personaText.replace(/^[\s*#-]+/, '').replace(/[*_`]/g, '').trim();
 
@@ -83,18 +83,17 @@ app.post('/api/chat', async (req, res) => {
         // Remove last message from history, as it's the current user message being sent
         geminiHistory.pop(); 
 
-        const chat = ai.chats.create({
+        // 修复chat端点 (大约第85行)
+        const chat = await ai.chats.create({
             model: 'gemini-2.5-flash',
             history: geminiHistory,
-            config: {
-                systemInstruction: `You are a digital twin. Your communication style must strictly adhere to the following persona tag: "${persona}". Mimic this style in all your responses. Do not break character. Do not mention that you are an AI or a digital twin. Just act as the person described by the persona.`,
-            },
+            systemInstruction: `You are a digital twin. Your communication style must strictly adhere to the following persona tag: "${persona}". Mimic this style in all your responses. Do not break character. Do not mention that you are an AI or a digital twin. Just act as the person described by the persona.`,
         });
         
-        const stream = await chat.sendMessageStream({ message });
-
+        const response = await chat.sendMessageStream({ message });
+        
         res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-        for await (const chunk of stream) {
+        for await (const chunk of response) {
             res.write(chunk.text);
         }
         res.end();
