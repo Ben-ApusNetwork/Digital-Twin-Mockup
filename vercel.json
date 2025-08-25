@@ -18,8 +18,5 @@
       "src": "/(.*)",
       "dest": "/dist/public/$1"
     }
-  ],
-  "env": {
-    "API_KEY": "@api-key"
-  }
+  ]
 }
