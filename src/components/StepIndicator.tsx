@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { AppStep } from '../types';
 
@@ -5,11 +6,11 @@ interface StepIndicatorProps {
   currentStep: AppStep;
 }
 
-const steps = ['Bio & Quiz', 'Chat', 'Rate'];
+const steps = ['Data & Quiz', 'Chat', 'Rate'];
 
 const getStepIndex = (step: AppStep): number => {
   switch (step) {
-    case AppStep.BIO:
+    case AppStep.DATA_SOURCE:
     case AppStep.QUIZ:
     case AppStep.GENERATING:
       return 0;

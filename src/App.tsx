@@ -1,5 +1,6 @@
+
 import React, { useState, useCallback } from 'react';
-import BioStep from './components/BioStep';
+import DataSourceStep from './components/DataSourceStep';
 import QuizStep from './components/QuizStep';
 import GeneratingStep from './components/GeneratingStep';
 import ChatStep from './components/ChatStep';
@@ -12,15 +13,15 @@ import type { AppStep, QuizAnswers, Ratings } from './types';
 import { AppStep as AppStepEnum } from './types';
 
 const App: React.FC = () => {
-  const [step, setStep] = useState<AppStep>(AppStepEnum.BIO);
-  const [bio, setBio] = useState<string>('');
+  const [step, setStep] = useState<AppStep>(AppStepEnum.DATA_SOURCE);
+  const [dataSource, setDataSource] = useState<string>('');
   const [quizAnswers, setQuizAnswers] = useState<QuizAnswers>({});
   const [persona, setPersona] = useState<string>('');
   const [ratings, setRatings] = useState<Ratings>({ accuracy: 3, consciousness: 3, note: '' });
   const [error, setError] = useState<string | null>(null);
 
-  const handleBioSubmit = (userBio: string) => {
-    setBio(userBio);
+  const handleDataSourceSubmit = (data: string) => {
+    setDataSource(data);
     setStep(AppStepEnum.QUIZ);
   };
 
@@ -29,7 +30,7 @@ const App: React.FC = () => {
     setStep(AppStepEnum.GENERATING);
     setError(null);
     try {
-      const generatedPersona = await generatePersona(bio, answers);
+      const generatedPersona = await generatePersona(dataSource, answers);
       setPersona(generatedPersona);
       setStep(AppStepEnum.CHAT);
     } catch (e) {
@@ -38,7 +39,7 @@ const App: React.FC = () => {
       setError(errorMessage);
       setStep(AppStepEnum.QUIZ);
     }
-  }, [bio]);
+  }, [dataSource]);
 
   const handleChatComplete = () => {
     setStep(AppStepEnum.RATING);
@@ -50,18 +51,18 @@ const App: React.FC = () => {
   };
 
   const restart = () => {
-    setBio('');
+    setDataSource('');
     setQuizAnswers({});
     setPersona('');
     setRatings({ accuracy: 3, consciousness: 3, note: '' });
     setError(null);
-    setStep(AppStepEnum.BIO);
+    setStep(AppStepEnum.DATA_SOURCE);
   };
 
   const renderStep = () => {
     switch (step) {
-      case AppStepEnum.BIO:
-        return <BioStep onSubmit={handleBioSubmit} />;
+      case AppStepEnum.DATA_SOURCE:
+        return <DataSourceStep onSubmit={handleDataSourceSubmit} />;
       case AppStepEnum.QUIZ:
         return <QuizStep questions={quizQuestions} onSubmit={handleQuizSubmit} initialAnswers={quizAnswers} />;
       case AppStepEnum.GENERATING:
@@ -73,7 +74,7 @@ const App: React.FC = () => {
       case AppStepEnum.FINAL:
         return <FinalStep onRestart={restart} />;
       default:
-        return <BioStep onSubmit={handleBioSubmit} />;
+        return <DataSourceStep onSubmit={handleDataSourceSubmit} />;
     }
   };
 

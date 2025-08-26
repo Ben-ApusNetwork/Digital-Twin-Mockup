@@ -1,5 +1,5 @@
 
-import express from 'express';
+import express, { Request, Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI, Content } from '@google/genai';
@@ -19,11 +19,11 @@ if (!apiKey) {
 const ai = new GoogleGenAI({ apiKey });
 
 // --- API Endpoints ---
-app.post('/api/generate-persona', async (req, res) => {
+app.post('/api/generate-persona', async (req: Request, res: Response) => {
     try {
-        const { bio, answers } = req.body as { bio: string, answers: QuizAnswers };
-        if (!bio || !answers) {
-            return res.status(400).json({ error: 'Missing bio or answers' });
+        const { dataSource, answers } = req.body as { dataSource: string, answers: QuizAnswers };
+        if (!dataSource || !answers) {
+            return res.status(400).json({ error: 'Missing data source or answers' });
         }
 
         const quizAnswersString = Object.entries(answers)
@@ -31,14 +31,15 @@ app.post('/api/generate-persona', async (req, res) => {
             .join('\n');
 
         const prompt = `
-            Based on the user's bio and quiz answers, generate a short persona tag describing their communication style.
+            Based on the user's provided writing sample and quiz answers, generate a short persona tag describing their communication style.
             The tag must be a single line of text with 5-7 descriptive points separated by a '•' character.
+            The user's writing sample is the MOST IMPORTANT source of truth. The quiz answers provide additional context.
+            Analyze the writing sample for: tone, vocabulary, sentence structure, formality, use of slang, use of emojis, punctuation habits, and overall personality.
             Example: Friendly • Uses slang • Frequent emojis • Asks questions • Concise • Sarcastic undertones
-            Focus on tone, phrasing, formality, and use of things like emojis or slang.
             The output must be plain text only, without any markdown (no asterisks, lists, etc.), and only contain the tag itself.
 
-            **User Bio:**
-            ${bio}
+            **User Writing Sample:**
+            ${dataSource}
 
             **Personality Quiz Answers:**
             ${quizAnswersString}
@@ -46,16 +47,16 @@ app.post('/api/generate-persona', async (req, res) => {
             **Generated Persona Tag:**
         `;
 
-        // 修复generate-persona端点 (大约第49行)
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: {
+            contents: prompt,
+            config: {
                 temperature: 0.5,
                 maxOutputTokens: 50,
+                thinkingConfig: { thinkingBudget: 25 },
             }
         });
-        
+
         const personaText = response.text.trim();
         const cleanedPersona = personaText.replace(/^[\s*#-]+/, '').replace(/[*_`]/g, '').trim();
 
@@ -67,7 +68,7 @@ app.post('/api/generate-persona', async (req, res) => {
     }
 });
 
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', async (req: Request, res: Response) => {
     try {
         const { persona, history, message } = req.body as { persona: string, history: ChatMessage[], message: string };
 
@@ -83,17 +84,18 @@ app.post('/api/chat', async (req, res) => {
         // Remove last message from history, as it's the current user message being sent
         geminiHistory.pop(); 
 
-        // 修复chat端点 (大约第85行)
-        const chat = await ai.chats.create({
+        const chat = ai.chats.create({
             model: 'gemini-2.5-flash',
             history: geminiHistory,
-            systemInstruction: `You are a digital twin. Your communication style must strictly adhere to the following persona tag: "${persona}". Mimic this style in all your responses. Do not break character. Do not mention that you are an AI or a digital twin. Just act as the person described by the persona.`,
+            config: {
+                systemInstruction: `You are a digital twin. Your communication style must strictly adhere to the following persona tag: "${persona}". Mimic this style in all your responses. Do not break character. Do not mention that you are an AI or a digital twin. Just act as the person described by the persona.`,
+            },
         });
         
-        const response = await chat.sendMessageStream({ message });
-        
+        const stream = await chat.sendMessageStream({ message });
+
         res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-        for await (const chunk of response) {
+        for await (const chunk of stream) {
             res.write(chunk.text);
         }
         res.end();
@@ -115,7 +117,7 @@ const __dirname = path.dirname(__filename);
 const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
 
-app.get('*', (req, res) => {
+app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 

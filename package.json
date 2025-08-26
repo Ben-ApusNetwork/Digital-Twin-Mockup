@@ -7,14 +7,14 @@
   "scripts": {
     "build": "npm run build:client && npm run build:server",
     "build:client": "mkdir -p dist/public && esbuild src/index.tsx --bundle --minify --outfile=dist/public/index.js && cp public/* dist/public/",
-    "build:server": "mkdir -p dist && esbuild server/server.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server.js",
+    "build:server": "mkdir -p dist && esbuild server/server.ts --bundle --minify --platform=node --format=esm --outfile=dist/server.js",
     "start": "node dist/server.js"
   },
   "dependencies": {
-    "@google/genai": "^1.15.0",
+    "@google/genai": "^0.15.0",
     "express": "^4.19.2",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

@@ -1,12 +1,13 @@
+
 import type { QuizAnswers, ChatMessage } from '../types';
 
-export const generatePersona = async (bio: string, answers: QuizAnswers): Promise<string> => {
+export const generatePersona = async (dataSource: string, answers: QuizAnswers): Promise<string> => {
   const response = await fetch('/api/generate-persona', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ bio, answers }),
+    body: JSON.stringify({ dataSource, answers }),
   });
 
   if (!response.ok) {

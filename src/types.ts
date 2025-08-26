@@ -1,6 +1,7 @@
 
+
 export enum AppStep {
-  BIO = 'BIO',
+  DATA_SOURCE = 'DATA_SOURCE',
   QUIZ = 'QUIZ',
   GENERATING = 'GENERATING',
   CHAT = 'CHAT',
