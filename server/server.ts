@@ -1,11 +1,11 @@
-// FIX: Disambiguate express types by importing Request and Response with aliases to avoid conflicts with global DOM types.
-import express, { Express, Request as ExpressRequest, Response as ExpressResponse } from 'express';
+// FIX: Changed express import and type annotations to resolve type conflicts.
+import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI, Content } from '@google/genai';
 import type { QuizAnswers, ChatMessage } from '../src/types';
 
-const app: Express = express();
+const app: express.Express = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 8080;
@@ -19,8 +19,8 @@ if (!apiKey) {
 const ai = new GoogleGenAI({ apiKey });
 
 // --- API Endpoints ---
-// FIX: Explicitly use aliased ExpressRequest and ExpressResponse types from express to resolve type errors.
-app.post('/api/generate-persona', async (req: ExpressRequest, res: ExpressResponse) => {
+// FIX: Explicitly use express.Request and express.Response types from express to resolve type errors.
+app.post('/api/generate-persona', async (req: express.Request, res: express.Response) => {
     try {
         const { dataSource, answers } = req.body as { dataSource: string, answers: QuizAnswers };
         if (!dataSource || !answers) {
@@ -69,8 +69,8 @@ app.post('/api/generate-persona', async (req: ExpressRequest, res: ExpressRespon
     }
 });
 
-// FIX: Explicitly use aliased ExpressRequest and ExpressResponse types from express to resolve type errors.
-app.post('/api/chat', async (req: ExpressRequest, res: ExpressResponse) => {
+// FIX: Explicitly use express.Request and express.Response types from express to resolve type errors.
+app.post('/api/chat', async (req: express.Request, res: express.Response) => {
     try {
         const { persona, history, message } = req.body as { persona: string, history: ChatMessage[], message: string };
 
@@ -119,8 +119,8 @@ const __dirname = path.dirname(__filename);
 const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
 
-// FIX: Explicitly use aliased ExpressRequest and ExpressResponse types from express to resolve type errors.
-app.get('*', (req: ExpressRequest, res: ExpressResponse) => {
+// FIX: Explicitly use express.Request and express.Response types from express to resolve type errors.
+app.get('*', (req: express.Request, res: express.Response) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 
