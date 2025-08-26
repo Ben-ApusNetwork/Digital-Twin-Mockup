@@ -1,11 +1,11 @@
-
-import express, { Request, Response } from 'express';
+// FIX: Disambiguate express types by importing Request and Response with aliases to avoid conflicts with global DOM types.
+import express, { Express, Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI, Content } from '@google/genai';
 import type { QuizAnswers, ChatMessage } from '../src/types';
 
-const app = express();
+const app: Express = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 8080;
@@ -19,7 +19,8 @@ if (!apiKey) {
 const ai = new GoogleGenAI({ apiKey });
 
 // --- API Endpoints ---
-app.post('/api/generate-persona', async (req: Request, res: Response) => {
+// FIX: Explicitly use aliased ExpressRequest and ExpressResponse types from express to resolve type errors.
+app.post('/api/generate-persona', async (req: ExpressRequest, res: ExpressResponse) => {
     try {
         const { dataSource, answers } = req.body as { dataSource: string, answers: QuizAnswers };
         if (!dataSource || !answers) {
@@ -68,7 +69,8 @@ app.post('/api/generate-persona', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/api/chat', async (req: Request, res: Response) => {
+// FIX: Explicitly use aliased ExpressRequest and ExpressResponse types from express to resolve type errors.
+app.post('/api/chat', async (req: ExpressRequest, res: ExpressResponse) => {
     try {
         const { persona, history, message } = req.body as { persona: string, history: ChatMessage[], message: string };
 
@@ -117,7 +119,8 @@ const __dirname = path.dirname(__filename);
 const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
 
-app.get('*', (req: Request, res: Response) => {
+// FIX: Explicitly use aliased ExpressRequest and ExpressResponse types from express to resolve type errors.
+app.get('*', (req: ExpressRequest, res: ExpressResponse) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 

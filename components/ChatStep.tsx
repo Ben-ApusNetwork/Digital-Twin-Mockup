@@ -18,11 +18,19 @@ const ChatStep: React.FC<ChatStepProps> = ({ persona, onComplete }) => {
   const [turn, setTurn] = useState(0);
   const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     chatRef.current = createChat(persona);
   }, [persona]);
   
+  useEffect(() => {
+    // Focus the input when the component mounts and when the AI is done responding.
+    if (!isLoading) {
+      inputRef.current?.focus();
+    }
+  }, [isLoading]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -115,6 +123,7 @@ const ChatStep: React.FC<ChatStepProps> = ({ persona, onComplete }) => {
         ) : (
         <form onSubmit={handleFormSubmit} className="flex space-x-2">
           <input
+            ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}

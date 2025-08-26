@@ -35,17 +35,6 @@ export const quizQuestions: QuizQuestion[] = [
     type: 'choice',
     options: ['Sarcastic', 'Witty / Dry', 'Silly / Goofy', 'Dark'],
   },
-  {
-    id: 'q5',
-    question: 'What\'s your go-to conversation starter?',
-    type: 'choice',
-    options: [
-        'Any fun plans for the weekend?',
-        'Seen any good movies/shows lately?',
-        'Something observational about the current situation.',
-        'A random, interesting fact.'
-    ],
-  },
    {
     id: 'q6',
     question: 'When you share good news, are you more likely to be...',

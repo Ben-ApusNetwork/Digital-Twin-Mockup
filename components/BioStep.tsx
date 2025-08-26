@@ -19,7 +19,11 @@ const BioStep: React.FC<BioStepProps> = ({ onSubmit }) => {
     <div className="animate-fade-in">
       <h2 className="text-2xl font-bold text-content-strong mb-4 text-center">Tell Us About Yourself</h2>
       <p className="text-center text-content mb-6">
-        Write a short bio. This helps the AI understand your communication style. Think about how you'd describe yourself on a social media profile.
+        Quickly copy your bio from{' '}
+        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" className="text-brand-primary hover:underline">LinkedIn</a>,{' '}
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-brand-primary hover:underline">Twitter</a>, or{' '}
+        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="text-brand-primary hover:underline">Facebook</a>
+        {' and paste below. You can also write a short bio here yourself.'}
       </p>
       <form onSubmit={handleSubmit}>
         <textarea
